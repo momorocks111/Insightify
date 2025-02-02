@@ -1,0 +1,76 @@
+:root {
+  /* Dark theme variables */
+  --dark-text: #e6eae9;
+  --dark-background: #09100e;
+  --dark-primary: #9adbc8;
+  --dark-secondary: #1b8869;
+  --dark-accent: #17eeb1;
+
+  /* Light theme variables */
+  --light-text: #151918;
+  --light-background: #eff6f4;
+  --light-primary: #246552;
+  --light-secondary: #77e4c5;
+  --light-accent: #11e8ac;
+
+  /* Default to dark theme */
+  --text-color: var(--dark-text);
+  --background-color: var(--dark-background);
+  --primary-color: var(--dark-primary);
+  --secondary-color: var(--dark-secondary);
+  --accent-color: var(--dark-accent);
+
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Reset and base styles */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+  min-height: 100vh;
+}
+
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+button {
+  background-color: var(--primary-color);
+  color: var(--background-color);
+  border: none;
+  padding: 0.5em 1em;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: var(--secondary-color);
+}
+
+[data-theme="light"] {
+  --text-color: var(--light-text);
+  --background-color: var(--light-background);
+  --primary-color: var(--light-primary);
+  --secondary-color: var(--light-secondary);
+  --accent-color: var(--light-accent);
+}
