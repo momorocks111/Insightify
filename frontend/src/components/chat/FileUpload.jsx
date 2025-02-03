@@ -2,12 +2,12 @@ import React from "react";
 import { useChat } from "../../contexts/ChatContext";
 
 function FileUpload() {
-  const { sendMessage } = useChat();
+  const { uploadFile } = useChat();
 
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
-      sendMessage(null, file);
+      uploadFile(file);
     }
   };
 
@@ -17,7 +17,12 @@ function FileUpload() {
         type="file"
         onChange={handleFileUpload}
         accept=".csv,.xlsx,.json,.sql"
+        id="file-upload"
+        className="file-upload-input"
       />
+      <label htmlFor="file-upload" className="file-upload-label">
+        Upload Data File
+      </label>
     </div>
   );
 }

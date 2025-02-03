@@ -6,21 +6,34 @@ import NewChatButton from "./NewChatButton";
 function Sidebar() {
   return (
     <aside className="sidebar">
-      <nav>
-        <ul>
-          <li>
-            <Link to="/">Home</Link>
+      <div className="sidebar-header">
+        <h2 className="sidebar-title">Insightify</h2>
+      </div>
+      <nav className="sidebar-nav">
+        <ul className="sidebar-nav-list">
+          <li className="sidebar-nav-item">
+            <Link to="/" className="sidebar-nav-link">
+              Home
+            </Link>
           </li>
-          <li>
-            <Link to="/chat">Chat</Link>
+          <li className="sidebar-nav-item">
+            <Link to="/chat" className="sidebar-nav-link">
+              Chat
+            </Link>
           </li>
-          <li>
-            <Link to="/analysis">Analysis</Link>
+          <li className="sidebar-nav-item">
+            <Link to="/analysis" className="sidebar-nav-link">
+              Analysis
+            </Link>
           </li>
         </ul>
       </nav>
-      <NewChatButton />
-      <ChatList />
+      <div className="sidebar-actions">
+        <NewChatButton />
+      </div>
+      <div className="sidebar-chats">
+        <ChatList />
+      </div>
     </aside>
   );
 }

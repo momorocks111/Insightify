@@ -10,13 +10,32 @@ function App() {
   return (
     <Router>
       <ChatProvider>
-        <Layout>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/chat/:id?" element={<Chat />} />
-            <Route path="/analysis" element={<Analysis />} />
-          </Routes>
-        </Layout>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <Layout>
+                <Home />
+              </Layout>
+            }
+          />
+          <Route
+            path="/chat/:id?"
+            element={
+              <Layout>
+                <Chat />
+              </Layout>
+            }
+          />
+          <Route
+            path="/analysis"
+            element={
+              <Layout>
+                <Analysis />
+              </Layout>
+            }
+          />
+        </Routes>
       </ChatProvider>
     </Router>
   );

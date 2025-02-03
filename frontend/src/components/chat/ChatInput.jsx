@@ -14,14 +14,17 @@ function ChatInput() {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="chat-input-form">
       <input
         type="text"
         value={input}
         onChange={(e) => setInput(e.target.value)}
-        placeholder="Ask about your data..."
+        placeholder="Ask about your data or type a command..."
+        className="chat-input"
       />
-      <button type="submit">Send</button>
+      <button type="submit" className="chat-submit-button">
+        Send
+      </button>
     </form>
   );
 }
