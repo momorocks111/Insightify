@@ -5,6 +5,7 @@ from pathlib import Path
 from transformers import GPT2LMHeadModel, GPT2Tokenizer
 from sklearn.base import BaseEstimator
 import torch
+from app.services.training_pipeline import TrainingPipeline
 
 logger = logging.getLogger(__name__)
 
@@ -54,21 +55,20 @@ class ModelManager:
 
     def train_and_register_model(self, name: str, model_type: str, data: Any, **kwargs):
         logger.info(f"Training model: {name}")
-        if model_type == 'gpt2':
-            model = self._train_gpt2(data, **kwargs)
-        elif model_type == 'time_series':
-            model = self._train_time_series(data, **kwargs)
-        elif model_type == 'image_classification':
-            model = self._train_image_classification(data, **kwargs)
-        else:
-            raise ValueError(f"Unsupported model type: {model_type}")
-
+        pipeline = TrainingPipeline(model_type)
+        prepared_data = pipeline.prepare_data(data)
+        pipeline.train(prepared_data, **kwargs)
+        
         metadata = {
             'type': model_type,
             'training_data_shape': data.shape if hasattr(data, 'shape') else None,
             **kwargs
         }
-        self.registry.add_model(name, model, metadata)
+        self.registry.add_model(name, pipeline.model, metadata)
+        
+        # Save the model
+        model_path = self.registry.models_dir / f"{name}_model.pt"
+        pipeline.save_model(str(model_path))
 
     def _train_gpt2(self, data, **kwargs):
         model = GPT2LMHeadModel.from_pretrained('gpt2')
@@ -87,7 +87,12 @@ class ModelManager:
         return model
 
     def get_model(self, name: str):
-        return self.registry.get_model(name)
+        model_data = self.registry.get_model(name)
+        model_type = model_data['metadata']['type']
+        pipeline = TrainingPipeline(model_type)
+        model_path = self.registry.models_dir / f"{name}_model.pt"
+        pipeline.load_model(str(model_path))
+        return pipeline.model
 
     def list_models(self):
         return self.registry.list_models()
