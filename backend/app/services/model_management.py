@@ -2,6 +2,9 @@ import joblib
 from typing import Dict, Any
 import logging
 from pathlib import Path
+from transformers import GPT2LMHeadModel, GPT2Tokenizer
+from sklearn.base import BaseEstimator
+import torch
 
 logger = logging.getLogger(__name__)
 
@@ -52,13 +55,10 @@ class ModelManager:
     def train_and_register_model(self, name: str, model_type: str, data: Any, **kwargs):
         logger.info(f"Training model: {name}")
         if model_type == 'gpt2':
-            # Placeholder for GPT-2 training logic
             model = self._train_gpt2(data, **kwargs)
         elif model_type == 'time_series':
-            # Placeholder for time series model training logic
             model = self._train_time_series(data, **kwargs)
         elif model_type == 'image_classification':
-            # Placeholder for image classification model training logic
             model = self._train_image_classification(data, **kwargs)
         else:
             raise ValueError(f"Unsupported model type: {model_type}")
@@ -71,13 +71,23 @@ class ModelManager:
         self.registry.add_model(name, model, metadata)
 
     def _train_gpt2(self, data, **kwargs):
-        # Placeholder for GPT-2 training logic
-        pass
+        model = GPT2LMHeadModel.from_pretrained('gpt2')
+        tokenizer = GPT2Tokenizer.from_pretrained('gpt2')
+        # Implement fine-tuning logic here
+        return model
 
     def _train_time_series(self, data, **kwargs):
         # Placeholder for time series model training logic
-        pass
+        model = BaseEstimator()
+        return model
 
     def _train_image_classification(self, data, **kwargs):
         # Placeholder for image classification model training logic
-        pass
+        model = BaseEstimator()
+        return model
+
+    def get_model(self, name: str):
+        return self.registry.get_model(name)
+
+    def list_models(self):
+        return self.registry.list_models()
