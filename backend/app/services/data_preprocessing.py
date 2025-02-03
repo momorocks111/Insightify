@@ -11,13 +11,23 @@ logger = logging.getLogger(__name__)
 class DataPreprocessor:
     def __init__(self):
         self.preprocessor = None
+        self.is_fitted = False
+        self.feature_names = None
+        self.categorical_features = None
+        self.numeric_features = None
 
     def fit_transform(self, data: pd.DataFrame):
         logger.info("Starting data preprocessing")
         
         # Identify numeric and categorical columns
-        numeric_features = data.select_dtypes(include=['int64', 'float64']).columns
-        categorical_features = data.select_dtypes(include=['object', 'category']).columns
+        self.numeric_features = data.select_dtypes(include=['int64', 'float64']).columns
+        self.categorical_features = data.select_dtypes(include=['object', 'category']).columns
+
+        # If no categorical features, just return the original data
+        if len(self.categorical_features) == 0:
+            logger.info("No categorical features found. Skipping preprocessing.")
+            self.is_fitted = True
+            return data
 
         numeric_transformer = Pipeline(steps=[
             ('imputer', SimpleImputer(strategy='median')),
@@ -31,35 +41,38 @@ class DataPreprocessor:
 
         self.preprocessor = ColumnTransformer(
             transformers=[
-                ('num', numeric_transformer, numeric_features),
-                ('cat', categorical_transformer, categorical_features)
+                ('num', numeric_transformer, self.numeric_features),
+                ('cat', categorical_transformer, self.categorical_features)
             ])
 
         logger.info("Fitting and transforming data")
         transformed_data = self.preprocessor.fit_transform(data)
         
-        # Convert to DataFrame and set column names
-        feature_names = (numeric_features.tolist() + 
-                         self.preprocessor.named_transformers_['cat']
-                         .named_steps['onehot'].get_feature_names_out(categorical_features).tolist())
+        # Store feature names
+        self.feature_names = (self.numeric_features.tolist() + 
+                              self.preprocessor.named_transformers_['cat']
+                              .named_steps['onehot'].get_feature_names_out(self.categorical_features).tolist())
         
-        transformed_df = pd.DataFrame(transformed_data, columns=feature_names, index=data.index)
+        transformed_df = pd.DataFrame(transformed_data, columns=self.feature_names, index=data.index)
         
+        self.is_fitted = True
         logger.info("Data preprocessing completed")
         return transformed_df
 
     def transform(self, data: pd.DataFrame):
-        if self.preprocessor is None:
+        if not self.is_fitted:
             raise ValueError("Preprocessor has not been fitted. Call fit_transform first.")
         
         logger.info("Transforming new data")
+        
+        # If no categorical features were present during fitting, just return the original data
+        if len(self.categorical_features) == 0:
+            logger.info("No categorical features found. Skipping preprocessing.")
+            return data
+
         transformed_data = self.preprocessor.transform(data)
         
-        feature_names = (self.preprocessor.named_transformers_['num'].get_feature_names_out().tolist() + 
-                         self.preprocessor.named_transformers_['cat']
-                         .named_steps['onehot'].get_feature_names_out().tolist())
-        
-        transformed_df = pd.DataFrame(transformed_data, columns=feature_names, index=data.index)
+        transformed_df = pd.DataFrame(transformed_data, columns=self.feature_names, index=data.index)
         
         logger.info("Data transformation completed")
         return transformed_df

@@ -1,30 +1,24 @@
-from flask import Blueprint, request, jsonify
+from flask_restx import Namespace, Resource
+from flask import request
 from app.services.visualization import Visualizer
 import pandas as pd
 import logging
 
 logger = logging.getLogger(__name__)
 
-visualization = Blueprint('visualization', __name__)
+ns = Namespace('visualization', description='Data visualization operations')
+
 visualizer = Visualizer()
 
-@visualization.route('/generate', methods=['POST'])
-def generate_visualization():
-    try:
-        data = request.json.get('data')
-        viz_type = request.json.get('type')
-        x_column = request.json.get('x_column')
-        y_column = request.json.get('y_column')
-        title = request.json.get('title', '')
-
-        df = pd.DataFrame(data)
-        
-        if not viz_type:
-            viz_type = visualizer.suggest_visualization(df)
-
-        result = visualizer.generate_visualization(df, viz_type, x_column, y_column, title)
-        return jsonify(result), 200
-    except Exception as e:
-        logger.error(f"Error in generate_visualization: {str(e)}")
-        return jsonify({"error": str(e)}), 400
-
+@ns.route('/generate')
+class VisualizationGenerator(Resource):
+    def post(self):
+        """Generate a visualization"""
+        try:
+            data = request.json
+            df = pd.DataFrame(data['data'])
+            result = visualizer.generate_visualization(df, data['type'], data['x_column'], data['y_column'], data.get('title', ''))
+            return result, 200
+        except Exception as e:
+            logger.error(f"Error generating visualization: {str(e)}")
+            return {'error': str(e)}, 400

@@ -1,2 +1,5 @@
 plotly
 pandas
+flask
+flask-restx
+flask-jwt-extended
