@@ -7,7 +7,7 @@ export function ChatProvider({ children }) {
   const [currentChat, setCurrentChat] = useState(null);
 
   const createNewChat = () => {
-    const newChat = { id: Date.now(), messages: [], data: null };
+    const newChat = { id: Date.now(), messages: [] };
     setChats([...chats, newChat]);
     setCurrentChat(newChat);
     return newChat.id;
@@ -25,19 +25,30 @@ export function ChatProvider({ children }) {
         chats.map((chat) => (chat.id === currentChat.id ? updatedChat : chat))
       );
 
-      // Here you would typically send the message to your AI backend
-      // and then add the AI's response to the chat
+      // Simulate chatbot response
+      setTimeout(() => {
+        const botMessage = {
+          content: "I'm processing your request...",
+          sender: "bot",
+          timestamp: Date.now(),
+        };
+        const chatWithBotResponse = {
+          ...updatedChat,
+          messages: [...updatedChat.messages, botMessage],
+        };
+        setCurrentChat(chatWithBotResponse);
+        setChats(
+          chats.map((chat) =>
+            chat.id === currentChat.id ? chatWithBotResponse : chat
+          )
+        );
+      }, 1000);
     }
-  };
-
-  const uploadFile = (file) => {
-    // Implement file upload logic here
-    // This should process the file and update the currentChat.data
   };
 
   return (
     <ChatContext.Provider
-      value={{ chats, currentChat, createNewChat, sendMessage, uploadFile }}
+      value={{ chats, currentChat, createNewChat, sendMessage }}
     >
       {children}
     </ChatContext.Provider>

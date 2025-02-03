@@ -399,7 +399,7 @@
   }
 
   /* CHAT BOT */
-  .chat-content {
+  /* .chat-content {
     flex-direction: row;
   }
 
@@ -411,7 +411,7 @@
     display: block;
     flex-basis: 40%;
     max-width: 400px;
-  }
+  } */
 }
 
 /* DESKTOP (1024px) */

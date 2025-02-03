@@ -19,7 +19,7 @@ function ChatInput() {
         type="text"
         value={input}
         onChange={(e) => setInput(e.target.value)}
-        placeholder="Ask about your data or type a command..."
+        placeholder="Ask about your data..."
         className="chat-input"
       />
       <button type="submit" className="chat-submit-button">
