@@ -11,3 +11,11 @@ def train_model(X, y):
 
 def load_model():
     return joblib.load('models/model.joblib')
+
+class TimeSeriesModel:
+    # Implement time series model
+    pass
+
+class ImageClassificationModel:
+    # Implement image classification model
+    pass
