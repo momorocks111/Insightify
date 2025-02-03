@@ -199,6 +199,185 @@
 }
 
 /**********************************************************************************************************
+ ************************************************** CHAT **************************************************
+ **********************************************************************************************************/
+.chat-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.chat-header {
+  background-color: var(--sidebar-color);
+  padding: var(--spacing-md);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: var(--chat-header-height);
+  box-shadow: var(--shadow-md);
+  z-index: var(--z-index-header);
+}
+
+.chat-header h1 {
+  font-size: var(--font-size-xl);
+  color: var(--primary-color);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.chat-id {
+  font-size: var(--font-size-small);
+  color: var(--secondary-color);
+}
+
+.chat-content {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  overflow: hidden;
+}
+
+.chat-main {
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.chat-sidebar {
+  display: none;
+  background-color: var(--sidebar-color);
+  padding: var(--spacing-md);
+  overflow-y: auto;
+}
+
+.chat-sidebar h2 {
+  font-size: var(--font-size-large);
+  color: var(--primary-color);
+  margin-bottom: var(--spacing-md);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+/* ChatInterface Styles */
+.chat-interface {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.chat-messages {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: var(--spacing-md);
+}
+
+.chat-controls {
+  background-color: var(--chat-input-bg);
+  padding: var(--spacing-md);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  height: var(--chat-input-height);
+  box-shadow: var(--shadow-md);
+}
+
+/* MessageList and Message Styles */
+.message-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.message {
+  max-width: 80%;
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.user-message {
+  align-self: flex-end;
+  background-color: var(--user-message-bg);
+  color: var(--background-color);
+}
+
+.ai-message {
+  align-self: flex-start;
+  background-color: var(--ai-message-bg);
+  color: var(--background-color);
+}
+
+.message-content {
+  margin-bottom: var(--spacing-sm);
+}
+
+.message-data {
+  background-color: var(--background-color);
+  border-radius: var(--border-radius-sm);
+  padding: var(--spacing-sm);
+}
+
+/* ChatInput Styles */
+.chat-input-form {
+  display: flex;
+  gap: var(--spacing-sm);
+  flex-grow: 1;
+}
+
+.chat-input {
+  flex-grow: 1;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: none;
+  border-radius: var(--border-radius-md);
+  background-color: var(--background-color);
+  color: var(--text-color);
+  font-size: var(--font-size-base);
+}
+
+.chat-submit-button {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  background-color: var(--primary-color);
+  color: var(--background-color);
+  font-size: var(--font-size-base);
+  font-weight: bold;
+  transition: background-color var(--transition-speed);
+}
+
+.chat-submit-button:hover {
+  background-color: var(--secondary-color);
+}
+
+/* FileUpload Styles */
+.file-upload {
+  position: relative;
+}
+
+.file-upload-input {
+  display: none;
+}
+
+.file-upload-label {
+  display: inline-block;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: var(--secondary-color);
+  color: var(--background-color);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  font-size: var(--font-size-small);
+  transition: background-color var(--transition-speed);
+}
+
+.file-upload-label:hover {
+  background-color: var(--primary-color);
+}
+
+/* DataVisualization Styles */
+.data-visualization {
+  margin-top: var(--spacing-md);
+}
+/**********************************************************************************************************
  *********************************************** BREAKPOINTS **********************************************
  **********************************************************************************************************/
 /* TABLET (768px) */
@@ -218,6 +397,21 @@
   .home-cta {
     flex-direction: row;
   }
+
+  /* CHAT BOT */
+  .chat-content {
+    flex-direction: row;
+  }
+
+  .chat-main {
+    flex-basis: 60%;
+  }
+
+  .chat-sidebar {
+    display: block;
+    flex-basis: 40%;
+    max-width: 400px;
+  }
 }
 
 /* DESKTOP (1024px) */
@@ -232,6 +426,15 @@
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: var(--spacing-lg);
+  }
+
+  /* CHAT BOT */
+  .chat-main {
+    flex-basis: 70%;
+  }
+
+  .chat-sidebar {
+    flex-basis: 30%;
   }
 }
 
