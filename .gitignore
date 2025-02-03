@@ -13,3 +13,23 @@ __pycache__
 # IDE files
 .vscode
 .idea
+
+# Database files
+*.db
+*.sqlite3
+
+# Model files
+*.joblib
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# sql files
+*.sql

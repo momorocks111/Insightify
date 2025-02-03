@@ -46,9 +46,31 @@ export function ChatProvider({ children }) {
     }
   };
 
+  const uploadFile = (file) => {
+    if (currentChat) {
+      // For now, we'll just add a message indicating a file was uploaded
+      const newMessage = {
+        content: `File uploaded: ${file.name}`,
+        sender: "user",
+        timestamp: Date.now(),
+      };
+      const updatedChat = {
+        ...currentChat,
+        messages: [...currentChat.messages, newMessage],
+      };
+      setCurrentChat(updatedChat);
+      setChats(
+        chats.map((chat) => (chat.id === currentChat.id ? updatedChat : chat))
+      );
+
+      // Here you would typically process the file or send it to the backend
+      console.log("File uploaded:", file);
+    }
+  };
+
   return (
     <ChatContext.Provider
-      value={{ chats, currentChat, createNewChat, sendMessage }}
+      value={{ chats, currentChat, createNewChat, sendMessage, uploadFile }}
     >
       {children}
     </ChatContext.Provider>
