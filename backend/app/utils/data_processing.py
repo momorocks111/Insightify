@@ -38,32 +38,16 @@ def process_database_file(file_content):
     
     sql_dump = file_content.decode('utf-8')
     
-    # Remove MariaDB-specific syntax
-    sql_dump = re.sub(r'AUTO_INCREMENT', '', sql_dump)
-    sql_dump = re.sub(r'UNSIGNED', '', sql_dump)
-    sql_dump = re.sub(r'ENGINE=\w+', '', sql_dump)
+    # Execute SQL statements
+    for statement in sql_dump.split(';'):
+        try:
+            cursor.execute(statement)
+        except sqlite3.Error as e:
+            print(f"Error executing statement: {e}")
     
-    # Split the SQL dump into individual statements
-    statements = sql_dump.split(';')
-    
-    executed_statements = 0
-    for statement in statements:
-        statement = statement.strip()
-        if statement:
-            try:
-                cursor.execute(statement)
-                executed_statements += 1
-            except sqlite3.OperationalError as e:
-                logging.error(f"Error executing statement: {e}")
-                logging.error(f"Problematic statement: {statement}")
-                continue
-    
-    logging.info(f"Executed {executed_statements} out of {len(statements)} statements")
-    
+    # Analyze database structure
     cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
     tables = cursor.fetchall()
-    
-    logging.info(f"Found {len(tables)} tables")
     
     analysis_result = {}
     
@@ -80,5 +64,4 @@ def process_database_file(file_content):
         }
     
     conn.close()
-    
     return analysis_result

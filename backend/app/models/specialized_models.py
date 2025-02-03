@@ -1,5 +1,3 @@
-# In models/model.py
-
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import StandardScaler
 import joblib

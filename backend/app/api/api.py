@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from utils.data_processing import process_file
+from backend.app.utils.data_processing import process_file
 from models.model import train_model
 
 api = Blueprint('api', __name__)
