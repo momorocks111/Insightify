@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import ChatInterface from "../components/chat/ChatInterface";
 import DataVisualization from "../components/data/DataVisualization";
 import { useChat } from "../contexts/ChatContext";
@@ -8,13 +8,24 @@ import { faChartLine, faRobot } from "@fortawesome/free-solid-svg-icons";
 
 function Chat() {
   const { id } = useParams();
-  const { currentChat, switchChat } = useChat();
+  const { currentChat, switchChat, createNewChat } = useChat();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (id) {
       switchChat(Number(id));
     }
   }, [id, switchChat]);
+
+  console.log(currentChat);
+
+  if (!currentChat) {
+    return (
+      <div className="no-chat-message">
+        <h2>Select or create a chat to begin analyzing data.</h2>
+      </div>
+    );
+  }
 
   return (
     <div className="chat-page">
