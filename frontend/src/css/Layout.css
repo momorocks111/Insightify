@@ -515,6 +515,201 @@
 }
 
 /**********************************************************************************************************
+ *********************************************** BOT MESSAGE **********************************************
+ **********************************************************************************************************/
+.message.bot-message {
+  background-color: var(--ai-message-bg);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-speed) ease;
+}
+
+.message.bot-message:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Markdown styles */
+.message.bot-message .message-content {
+  font-size: var(--font-size-base);
+  line-height: 1.6;
+}
+
+.message.bot-message h1,
+.message.bot-message h2,
+.message.bot-message h3,
+.message.bot-message h4,
+.message.bot-message h5,
+.message.bot-message h6 {
+  margin-top: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+  font-weight: 600;
+}
+
+.message.bot-message h1 {
+  font-size: var(--font-size-xxl);
+}
+.message.bot-message h2 {
+  font-size: var(--font-size-xl);
+}
+.message.bot-message h3 {
+  font-size: var(--font-size-large);
+}
+.message.bot-message h4 {
+  font-size: var(--font-size-base);
+}
+.message.bot-message h5 {
+  font-size: var(--font-size-small);
+}
+.message.bot-message h6 {
+  font-size: var(--font-size-small);
+}
+
+.message.bot-message p {
+  margin-bottom: var(--spacing-md);
+}
+
+.message.bot-message a {
+  color: var(--accent-color);
+  text-decoration: none;
+  border-bottom: 1px dashed var(--accent-color);
+  transition: all var(--transition-speed) ease;
+}
+
+.message.bot-message a:hover {
+  border-bottom-style: solid;
+}
+
+.message.bot-message ul,
+.message.bot-message ol {
+  margin-bottom: var(--spacing-md);
+  padding-left: var(--spacing-xl);
+}
+
+.message.bot-message li {
+  margin-bottom: var(--spacing-sm);
+}
+
+.message.bot-message blockquote {
+  border-left: 4px solid var(--accent-color);
+  padding-left: var(--spacing-md);
+  margin: var(--spacing-md) 0;
+  font-style: italic;
+  color: var(--text-color);
+}
+
+.message.bot-message hr {
+  border: none;
+  border-top: 2px solid var(--secondary-color);
+  margin: var(--spacing-lg) 0;
+}
+
+.message.bot-message table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-bottom: var(--spacing-md);
+}
+
+.message.bot-message th,
+.message.bot-message td {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--secondary-color);
+}
+
+.message.bot-message th {
+  background-color: var(--secondary-color);
+  color: var(--background-color);
+  font-weight: bold;
+}
+
+.message.bot-message tr:nth-child(even) {
+  background-color: rgba(var(--secondary-color-rgb), 0.1);
+}
+
+/* Code blocks and inline code */
+.message.bot-message code {
+  font-family: "Fira Code", monospace;
+  background-color: rgba(var(--primary-color-rgb), 0.1);
+  padding: 0.2em 0.4em;
+  border-radius: var(--border-radius-sm);
+  font-size: 0.9em;
+}
+
+.message.bot-message pre {
+  background-color: var(--background-color);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-md);
+  overflow-x: auto;
+  margin-bottom: var(--spacing-md);
+}
+
+.message.bot-message pre code {
+  background-color: transparent;
+  padding: 0;
+  font-size: 0.9em;
+  color: var(--text-color);
+}
+
+/* Syntax highlighting */
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+  color: #6a9955;
+}
+
+.token.punctuation {
+  color: #d4d4d4;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+  color: #b5cea8;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+  color: #ce9178;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+  color: #d4d4d4;
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+  color: #c586c0;
+}
+
+.token.function,
+.token.class-name {
+  color: #dcdcaa;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+  color: #d16969;
+}
+
+/**********************************************************************************************************
  *********************************************** BREAKPOINTS **********************************************
  **********************************************************************************************************/
 /* TABLET (768px) */
@@ -536,19 +731,23 @@
   }
 
   /* CHAT BOT */
-  /* .chat-content {
-    flex-direction: row;
+  .message.bot-message {
+    padding: var(--spacing-md);
   }
 
-  .chat-main {
-    flex-basis: 60%;
+  .message.bot-message h1 {
+    font-size: var(--font-size-xl);
+  }
+  .message.bot-message h2 {
+    font-size: var(--font-size-large);
+  }
+  .message.bot-message h3 {
+    font-size: var(--font-size-base);
   }
 
-  .chat-sidebar {
-    display: block;
-    flex-basis: 40%;
-    max-width: 400px;
-  } */
+  .message.bot-message pre {
+    padding: var(--spacing-sm);
+  }
 }
 
 /* DESKTOP (1024px) */
@@ -589,7 +788,8 @@
   }
 }
 
-.chat-list-item {
+.chat-list-item,
+.message.bot-message {
   animation: fadeIn 0.3s ease-out forwards;
 }
 
