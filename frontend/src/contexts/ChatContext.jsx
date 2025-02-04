@@ -40,6 +40,7 @@ export function ChatProvider({ children }) {
       id: Date.now(),
       title: `Chat ${Date.now()}`,
       messages: [],
+      isLoading: false, // Added isLoading flag for each chat
     };
     setChats((prevChats) => [newChat, ...prevChats]);
     setCurrentChat(newChat);
@@ -72,7 +73,9 @@ export function ChatProvider({ children }) {
       const updatedChat = {
         ...currentChat,
         messages: [...currentChat.messages, newMessage],
+        isLoading: true, // Set loading state to true when sending message
       };
+
       setCurrentChat(updatedChat);
       setChats(
         chats.map((chat) => (chat.id === currentChat.id ? updatedChat : chat))
@@ -82,15 +85,19 @@ export function ChatProvider({ children }) {
         const response = await axios.post("http://127.0.0.1:5000/api/echo", {
           message: content,
         });
+
         const botMessage = {
           content: response.data.message,
           sender: "bot",
           timestamp: Date.now(),
         };
+
         const chatWithBotResponse = {
           ...updatedChat,
           messages: [...updatedChat.messages, botMessage],
+          isLoading: false, // Set loading to false when the response is received
         };
+
         setCurrentChat(chatWithBotResponse);
         setChats(
           chats.map((chat) =>
@@ -107,6 +114,7 @@ export function ChatProvider({ children }) {
         const chatWithErrorResponse = {
           ...updatedChat,
           messages: [...updatedChat.messages, errorMessage],
+          isLoading: false, // Set loading to false if error occurs
         };
         setCurrentChat(chatWithErrorResponse);
         setChats(
