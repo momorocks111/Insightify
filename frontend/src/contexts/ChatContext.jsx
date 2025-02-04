@@ -12,6 +12,7 @@ const ChatContext = createContext();
 export function ChatProvider({ children }) {
   const [chats, setChats] = useState([]);
   const [currentChat, setCurrentChat] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
 
   // Load chats from localStorage on initial render
   useEffect(() => {
@@ -82,16 +83,36 @@ export function ChatProvider({ children }) {
       );
 
       try {
-        const response = await axios.post(
-          "http://127.0.0.1:5000/api/echo",
-          { message: content },
-          { headers: { "Content-Type": "application/json" } }
-        );
+        let response;
+        if (selectedFile) {
+          const formData = new FormData();
+          formData.append("file", selectedFile);
+          formData.append("chat_id", currentChat.id);
+          formData.append("message", content);
+
+          response = await axios.post(
+            "http://127.0.0.1:5000/api/analyze_with_file",
+            formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            }
+          );
+          setSelectedFile(null);
+        } else {
+          response = await axios.post(
+            "http://127.0.0.1:5000/api/echo",
+            { message: content },
+            { headers: { "Content-Type": "application/json" } }
+          );
+        }
 
         const botMessage = {
           content: response.data.message,
           sender: "bot",
           timestamp: Date.now(),
+          fileInfo: response.data.file_info,
         };
 
         const chatWithBotResponse = {
@@ -156,6 +177,7 @@ export function ChatProvider({ children }) {
         uploadFile,
         switchChat,
         deleteChat,
+        setSelectedFile, // Add this
       }}
     >
       {children}

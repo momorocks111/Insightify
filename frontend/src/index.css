@@ -124,6 +124,7 @@ button:hover {
   --primary-color: var(--light-primary);
   --secondary-color: var(--light-secondary);
   --accent-color: var(--light-accent);
+  --sidebar-color: var(--light-sidebar);
 }
 
 /* Webkit browsers (Chrome, Safari, newer versions of Opera) */

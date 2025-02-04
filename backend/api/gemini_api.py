@@ -1,4 +1,6 @@
 import os
+import json
+from typing import Union
 import google.generativeai as genai
 from dotenv import load_dotenv
 
@@ -14,20 +16,35 @@ genai.configure(api_key=GOOGLE_API_KEY)
 # Initialize the model
 model = genai.GenerativeModel('gemini-1.5-pro')
 
-def get_gemini_response(message: str, file_paths: list) -> str:
+def get_gemini_response(message: str, data: Union[list, dict]) -> str:
     try:
-        # Start a new chat
         chat = model.start_chat(history=[])
         
-        # If there are file paths, include them in the message
-        if file_paths:
-            file_info = "\n".join([f"File: {path}" for path in file_paths])
-            message = f"Files uploaded:\n{file_info}\n\nUser query: {message}"
+        # Prepare a structured prompt with the data and analysis request
+        if isinstance(data, list):
+            data_summary = "\n".join([f"File: {file_path}" for file_path in data])
+        else:
+            data_summary = json.dumps(data, indent=2)
+
+        prompt = f"""
+        Analyze the following data and provide insights:
+
+        Data Summary:
+        {data_summary}
+
+        User Message: {message}
+
+        Please provide the following:
+        1. Identify key trends in the data
+        2. Suggest relevant visualizations
+        3. Provide insights based on the data characteristics
+        4. Any additional observations or recommendations
+
+        Format your response in a structured manner, using markdown for headings and lists.
+        """
         
-        # Send the message and get the response
-        response = chat.send_message(message)
-        
+        response = chat.send_message(prompt)
         return response.text
     except Exception as e:
         print(f"Error while calling Gemini API: {e}")
-        return {"error": "Failed to get response from the Gemini API."}
+        return {"error": f"Failed to get response from the Gemini API: {str(e)}"}

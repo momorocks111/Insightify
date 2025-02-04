@@ -2,12 +2,14 @@ import React from "react";
 import { Link } from "react-router-dom";
 import ChatList from "./ChatList";
 import NewChatButton from "./NewChatButton";
+import ThemeToggle from "../ThemeToggle";
 
 function Sidebar() {
   return (
     <aside className="sidebar">
       <div className="sidebar-header">
         <h2 className="sidebar-title">Insightify</h2>
+        <ThemeToggle />
       </div>
       <nav className="sidebar-nav">
         <ul className="sidebar-nav-list">

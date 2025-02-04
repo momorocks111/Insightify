@@ -53,6 +53,17 @@
 .sidebar-header {
   padding: var(--spacing-md);
   border-bottom: 1px solid var(--secondary-color);
+  display: flex;
+  justify-content: space-between;
+}
+
+.theme-toggle {
+  background-color: transparent;
+  color: var(--text-color);
+  border: none;
+  border-radius: 50%;
+  font-size: 1.25rem;
+  padding: 8px;
 }
 
 .sidebar-title {
@@ -438,7 +449,7 @@
 }
 
 .chat-list-item.active {
-  background-color: var(--light-primary);
+  background-color: var(--secondary-color);
   box-shadow: 0 0 0 2px var(--color-info);
 }
 

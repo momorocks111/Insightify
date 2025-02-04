@@ -4,6 +4,7 @@ import pandas as pd
 from api.gemini_api import get_gemini_response
 from data.data_processor import preprocess_data
 from data.data_analyzer import analyze_data
+from data.data_visualizer import generate_visualizations
 import os
 
 app = Flask(__name__)
@@ -115,16 +116,18 @@ def analyze_data_route():
         return jsonify({"error": "No files uploaded for this chat."}), 400
     
     try:
-        # Process and analyze each file
         results = []
         for file_path in file_paths:
             processed_df, preprocessor = preprocess_data(file_path)
             analysis_results = analyze_data(processed_df)
+            visualizations = generate_visualizations(processed_df)
             
-            results.append({
+            file_result = {
                 'file_name': os.path.basename(file_path),
-                'analysis': analysis_results
-            })
+                'analysis': analysis_results,
+                'visualizations': visualizations
+            }
+            results.append(file_result)
         
         # Get insights from Gemini
         insights = get_gemini_response("Analyze this data and provide insights", results)
@@ -136,6 +139,55 @@ def analyze_data_route():
     
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+@app.route('/api/analyze_with_file', methods=['POST'])
+def analyze_with_file():
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file part', 'message': 'No file part'}), 400
+
+    file = request.files['file']
+    chat_id = request.form.get('chat_id')
+    message = request.form.get('message')
+
+    if not chat_id:
+        return jsonify({'error': 'Chat ID is required', 'message': 'Chat ID is required'}), 400
+
+    if file.filename == '':
+        return jsonify({'error': 'No selected file', 'message': 'No selected file'}), 400
+
+    if file:
+        # Save the file to the uploads folder
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+        file.save(file_path)
+
+        try:
+            processed_df, preprocessor = preprocess_data(file_path)
+            analysis_results = analyze_data(processed_df)
+            visualizations = generate_visualizations(processed_df)
+            
+            file_result = {
+                'file_name': file.filename,
+                'analysis': analysis_results,
+                'visualizations': visualizations
+            }
+            
+            # Get insights from Gemini
+            insights = get_gemini_response(f"Analyze this data and provide insights. User message: {message}", [file_result])
+            
+            return jsonify({
+                "message": insights,
+                "file_info": {
+                    'filename': file.filename,
+                    'rows': processed_df.shape[0],
+                    'columns': processed_df.shape[1],
+                    'preview': processed_df.head().to_dict(orient='records')
+                }
+            })
+        except Exception as e:
+            return jsonify({'error': f'Error processing file: {str(e)}', 'message': f'Error processing file: {str(e)}'}), 500
+
+    return jsonify({'error': 'Unknown error', 'message': 'Unknown error'}), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True)
