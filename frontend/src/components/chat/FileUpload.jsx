@@ -20,11 +20,12 @@ function FileUpload() {
       <input
         type="file"
         id="file-upload-input"
-        accept=".csv,.xlsx"
+        accept=".csv,.xlsx,.sql,.db,.sqlite"
         onChange={handleFileChange}
         disabled={loading}
         style={{ display: "none" }}
       />
+
       <label htmlFor="file-upload-input" className="file-upload-label">
         {buttonText}
       </label>

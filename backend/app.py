@@ -2,9 +2,6 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import pandas as pd
 from api.gemini_api import get_gemini_response
-from data.data_processor import preprocess_data
-from data.data_analyzer import analyze_data
-from data.data_visualizer import generate_visualizations
 import os
 
 app = Flask(__name__)

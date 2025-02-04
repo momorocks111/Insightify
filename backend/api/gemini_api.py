@@ -10,37 +10,60 @@ genai.configure(api_key=GOOGLE_API_KEY)
 model = genai.GenerativeModel('gemini-1.5-pro')
 
 def get_gemini_response(message: str, data: str) -> str:
-    print("Entering get_gemini_response function")
     try:
         chat = model.start_chat(history=[])
         
         if data:
-            print("Preparing prompt with data")
             prompt = f"""
-            Analyze the following JSON data and provide insights:
+            Analyze the following CSV data and provide a comprehensive analytical report:
 
-            Data:
+            Data Sample:
             {data[:1000]}  # Limiting to first 1000 characters for brevity
 
-            User Message: {message}
+            User Query: {message}
 
-            Please provide the following:
-            1. Identify key trends in the data
-            2. Suggest relevant visualizations
-            3. Provide insights based on the data characteristics
-            4. Any additional observations or recommendations
+            Please provide a detailed analysis including:
 
-            Format your response in a structured manner, using markdown for headings and lists.
+            1. Data Overview:
+               - Describe the structure and content of the dataset
+               - Identify the number of rows, columns, and data types
+
+            2. Statistical Analysis:
+               - Provide summary statistics for numerical columns (mean, median, standard deviation, min, max)
+               - Identify any outliers or anomalies in the data
+
+            3. Key Trends and Patterns:
+               - Identify and describe any significant trends or patterns in the data
+               - Analyze the distribution of categorical variables (e.g., gender)
+               - Examine relationships between different variables
+
+            4. Data Quality Assessment:
+               - Identify any missing values, duplicates, or inconsistencies in the data
+               - Suggest data cleaning or preprocessing steps if necessary
+
+            5. Advanced Analytics (if applicable):
+               - Perform correlation analysis between relevant variables
+               - Suggest potential predictive models or machine learning approaches for this dataset
+
+            6. Visualizations:
+               - Recommend specific charts or graphs that would best represent the data and insights
+               - Explain what each visualization would reveal about the data
+
+            7. Business Insights and Recommendations:
+               - Provide actionable insights based on the data analysis
+               - Suggest areas for further investigation or data collection
+
+            8. Limitations and Considerations:
+               - Discuss any limitations of the current dataset or analysis
+               - Suggest additional data that could enhance the analysis
+
+            Format your response in a structured manner, using markdown for headings and lists. Provide detailed explanations and justifications for your analysis and recommendations.
             """
         else:
-            print("No data provided, using message as prompt")
             prompt = message
 
-        print("Sending message to Gemini API")
         response = chat.send_message(prompt)
-        print("Received response from Gemini API")
         return response.text
     except Exception as e:
-        print(f"Error while calling Gemini API: {e}")
         return {"error": f"Failed to get response from the Gemini API: {str(e)}"}
 
