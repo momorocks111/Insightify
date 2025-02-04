@@ -3,6 +3,7 @@ import numpy as np
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import Pipeline
 
 def preprocess_data(file_path):
     # Read the file
@@ -38,12 +39,20 @@ def preprocess_data(file_path):
     # Fit and transform the data
     processed_data = preprocessor.fit_transform(df)
 
-    # Convert back to DataFrame
-    feature_names = (numeric_features.tolist() +
-                     preprocessor.named_transformers_['cat']
-                     .named_steps['onehot']
-                     .get_feature_names(categorical_features).tolist())
-    
-    processed_df = pd.DataFrame(processed_data, columns=feature_names, index=df.index)
+    # Get feature names
+    numeric_feature_names = numeric_features.tolist()
+    categorical_feature_names = preprocessor.named_transformers_['cat'].named_steps['onehot'].get_feature_names_out(categorical_features).tolist()
+    all_feature_names = numeric_feature_names + categorical_feature_names
+
+    # Ensure processed_data is 2D
+    if processed_data.ndim == 1:
+        processed_data = processed_data.reshape(-1, 1)
+
+    # Create DataFrame, handling potential shape mismatches
+    if processed_data.shape[1] == len(all_feature_names):
+        processed_df = pd.DataFrame(processed_data, columns=all_feature_names, index=df.index)
+    else:
+        print(f"Warning: Shape mismatch. Data shape: {processed_data.shape}, Features: {len(all_feature_names)}")
+        processed_df = pd.DataFrame(processed_data, index=df.index)
 
     return processed_df, preprocessor

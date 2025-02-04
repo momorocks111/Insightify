@@ -30,13 +30,12 @@ def echo():
     if not message:
         return jsonify({"error": "Message is required."}), 400
     
-    # Send the message to Gemini and get the response
-    gemini_response = get_gemini_response(message, [])
+    gemini_response = get_gemini_response(message, None)
     
     if isinstance(gemini_response, dict) and "error" in gemini_response:
         return jsonify(gemini_response), 500
     
-    return jsonify({"message": gemini_response})
+    return jsonify({"message": gemini_response, "file_info": None})
 
 @app.route('/api/upload', methods=['POST'])
 def upload_file():
@@ -142,51 +141,62 @@ def analyze_data_route():
     
 @app.route('/api/analyze_with_file', methods=['POST'])
 def analyze_with_file():
+    print("Entering analyze_with_file function")
     if 'file' not in request.files:
-        return jsonify({'error': 'No file part', 'message': 'No file part'}), 400
+        print("No file part in the request")
+        return jsonify({'error': 'No file part'}), 400
 
     file = request.files['file']
-    chat_id = request.form.get('chat_id')
-    message = request.form.get('message')
-
-    if not chat_id:
-        return jsonify({'error': 'Chat ID is required', 'message': 'Chat ID is required'}), 400
+    message = request.form.get('message', '')
+    print(f"Received file: {file.filename}, message: {message}")
 
     if file.filename == '':
-        return jsonify({'error': 'No selected file', 'message': 'No selected file'}), 400
+        print("No selected file")
+        return jsonify({'error': 'No selected file'}), 400
 
     if file:
-        # Save the file to the uploads folder
-        file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
-        file.save(file_path)
-
         try:
-            processed_df, preprocessor = preprocess_data(file_path)
-            analysis_results = analyze_data(processed_df)
-            visualizations = generate_visualizations(processed_df)
-            
-            file_result = {
-                'file_name': file.filename,
-                'analysis': analysis_results,
-                'visualizations': visualizations
-            }
+            print("Starting file processing")
+            # Read the file into a DataFrame
+            if file.filename.endswith('.csv'):
+                print("Reading CSV file")
+                df = pd.read_csv(file)
+            elif file.filename.endswith('.xlsx'):
+                print("Reading Excel file")
+                df = pd.read_excel(file)
+            else:
+                print(f"Unsupported file type: {file.filename}")
+                return jsonify({'error': 'Unsupported file type'}), 400
+
+            print(f"DataFrame shape: {df.shape}")
+            # Convert DataFrame to JSON
+            data_json = df.to_json(orient='records')
+            print("DataFrame converted to JSON")
             
             # Get insights from Gemini
-            insights = get_gemini_response(f"Analyze this data and provide insights. User message: {message}", [file_result])
+            print("Sending data to Gemini API")
+            insights = get_gemini_response(f"Analyze this data and provide insights. User message: {message}", data_json)
+            print("Received response from Gemini API")
+            print("Response contents:", insights)
             
-            return jsonify({
+            response = jsonify({
                 "message": insights,
                 "file_info": {
                     'filename': file.filename,
-                    'rows': processed_df.shape[0],
-                    'columns': processed_df.shape[1],
-                    'preview': processed_df.head().to_dict(orient='records')
+                    'rows': df.shape[0],
+                    'columns': df.shape[1],
+                    'preview': df.head().to_dict(orient='records')
                 }
             })
+            print("Prepared response")
+            print("Full response:", response.get_data(as_text=True))
+            return response
         except Exception as e:
-            return jsonify({'error': f'Error processing file: {str(e)}', 'message': f'Error processing file: {str(e)}'}), 500
+            print(f"Error processing file: {str(e)}")
+            return jsonify({'error': f'Error processing file: {str(e)}'}), 500
 
-    return jsonify({'error': 'Unknown error', 'message': 'Unknown error'}), 500
+    print("Unknown error occurred")
+    return jsonify({'error': 'Unknown error'}), 500
 
 
 if __name__ == '__main__':

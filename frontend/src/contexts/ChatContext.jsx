@@ -87,7 +87,6 @@ export function ChatProvider({ children }) {
         if (selectedFile) {
           const formData = new FormData();
           formData.append("file", selectedFile);
-          formData.append("chat_id", currentChat.id);
           formData.append("message", content);
 
           response = await axios.post(
@@ -108,12 +107,16 @@ export function ChatProvider({ children }) {
           );
         }
 
+        console.log("Received response:", response.data);
+
         const botMessage = {
           content: response.data.message,
           sender: "bot",
           timestamp: Date.now(),
           fileInfo: response.data.file_info,
         };
+
+        console.log("Bot message:", botMessage);
 
         const chatWithBotResponse = {
           ...updatedChat,
@@ -129,6 +132,7 @@ export function ChatProvider({ children }) {
         );
       } catch (error) {
         console.error("Error sending message:", error);
+        console.error("Error response:", error.response);
         const errorMessage = {
           content: "Failed to connect to the server.",
           sender: "bot",
