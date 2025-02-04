@@ -3,19 +3,17 @@ import sqlparse
 from typing import Union, List, Dict
 from werkzeug.datastructures import FileStorage
 import io
+import json
 
 def process_csv(file: FileStorage) -> pd.DataFrame:
-    # Reset the file pointer to the beginning of the file
     file.seek(0)
     return pd.read_csv(io.StringIO(file.read().decode('utf-8')))
 
 def process_excel(file: FileStorage) -> pd.DataFrame:
-    # Reset the file pointer to the beginning of the file
     file.seek(0)
     return pd.read_excel(io.BytesIO(file.read()))
 
 def process_sql(file: FileStorage) -> List[Dict]:
-    # Reset the file pointer to the beginning of the file
     file.seek(0)
     sql_content = file.read().decode('utf-8')
     statements = sqlparse.split(sql_content)
@@ -50,20 +48,30 @@ def process_sqlite(file_path: str) -> Dict[str, pd.DataFrame]:
     conn.close()
     return data
 
+def process_json(file: FileStorage) -> Union[Dict, List]:
+    file.seek(0)
+    return json.load(file)
+
+def process_text(file: FileStorage) -> str:
+    file.seek(0)
+    return file.read().decode('utf-8')
+
 def process_file(file: FileStorage, file_path: str) -> Union[pd.DataFrame, List[Dict], Dict[str, pd.DataFrame]]:
-    # Check if the file is empty
     file.seek(0, io.SEEK_END)
     if file.tell() == 0:
         raise ValueError("The uploaded file is empty")
-    file.seek(0)  # Reset file pointer to the beginning
+    file.seek(0)
     
     file_extension = file.filename.split('.')[-1].lower()
     processors = {
         'csv': process_csv,
         'xlsx': process_excel,
+        'xls': process_excel,
         'sql': process_sql,
         'db': process_sqlite,
-        'sqlite': process_sqlite
+        'sqlite': process_sqlite,
+        'json': process_json,
+        'txt': process_text
     }
     processor = processors.get(file_extension)
     if not processor:

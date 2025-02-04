@@ -12,16 +12,16 @@ def get_gemini_response(message: str, data: Union[str, Dict, List]) -> str:
     try:
         chat = model.start_chat(history=[])
         
-        # Convert data to a string representation
         if isinstance(data, (dict, list)):
-            data_str = json.dumps(data, indent=2)
+            data_str = json.dumps(data, indent=2, default=str)[:4000]
         else:
-            data_str = str(data)
+            data_str = str(data)[:4000]
 
         prompt = f"""
-        Analyze the following SQL data and provide a comprehensive analytical report:
+        Analyze the following data and provide a comprehensive analytical report:
 
-        Data:
+        Data Type: {type(data).__name__}
+        Data Sample:
         {data_str}
 
         User Query: {message}
@@ -29,13 +29,13 @@ def get_gemini_response(message: str, data: Union[str, Dict, List]) -> str:
         Please provide a detailed analysis including:
 
         1. Data Structure:
-           - Describe the table structure(s) in detail
-           - List all columns with their data types
-           - Identify primary keys and potential relationships
+           - Describe the structure and content of the dataset
+           - Identify the type of data (CSV, SQL, JSON, etc.)
+           - List all columns/fields with their data types (if applicable)
 
         2. Data Content Analysis:
-           - Provide a summary of the data (e.g., number of records, date ranges if applicable)
-           - Analyze the distribution of values in key columns (e.g., gender, email domains)
+           - Provide a summary of the data (e.g., number of records, key statistics)
+           - Analyze the distribution of values in key columns/fields
            - Identify any patterns or trends in the data
 
         3. Data Quality Assessment:
@@ -45,8 +45,8 @@ def get_gemini_response(message: str, data: Union[str, Dict, List]) -> str:
 
         4. Specific Insights:
            - Highlight any interesting or unusual data points
-           - Provide statistics on gender distribution, email providers, etc.
-           - Analyze IP addresses for any geographical insights
+           - Provide relevant statistics based on the data type
+           - Analyze any geographical or temporal aspects if present
 
         5. Recommendations:
            - Suggest improvements to the data structure or content
@@ -62,5 +62,3 @@ def get_gemini_response(message: str, data: Union[str, Dict, List]) -> str:
     except Exception as e:
         logger.error(f"Error in Gemini API: {str(e)}")
         return {"error": f"Failed to get response from the Gemini API: {str(e)}"}
-
-

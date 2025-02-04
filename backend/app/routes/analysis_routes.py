@@ -49,7 +49,7 @@ def analyze_with_file():
                 raise ValueError("Unsupported data format")
             
             logger.info("Data processed and analyzed")
-            logger.info("Analysis results: %s", json.dumps(analysis_results, indent=2))
+            logger.info("Analysis results: %s", json.dumps(analysis_results, default=str, indent=2))
             
             logger.info("Preparing data for Gemini API")
             gemini_input = {
@@ -58,7 +58,7 @@ def analyze_with_file():
                 "analysis_results": analysis_results,
                 "user_message": message
             }
-            logger.info("Data being sent to Gemini API: %s", json.dumps(gemini_input, indent=2))
+            logger.info("Data being sent to Gemini API: %s", json.dumps(gemini_input, default=str, indent=2))
             
             logger.info("Sending data to Gemini API")
             insights = get_gemini_response("Analyze this data and provide insights.", gemini_input)

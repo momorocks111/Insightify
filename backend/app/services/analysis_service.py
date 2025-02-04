@@ -1,5 +1,6 @@
 from typing import Union, Dict, List
 import pandas as pd
+import json
 
 def analyze_data(data: Union[pd.DataFrame, List[Dict], Dict[str, pd.DataFrame], str]) -> Dict:
     if isinstance(data, pd.DataFrame):
@@ -17,12 +18,12 @@ def analyze_dataframe(df: pd.DataFrame) -> Dict:
     analysis = {
         'shape': df.shape,
         'columns': df.columns.tolist(),
-        'dtypes': df.dtypes.to_dict(),
+        'dtypes': df.dtypes.astype(str).to_dict(),
         'summary': df.describe().to_dict(),
         'null_counts': df.isnull().sum().to_dict(),
         'sample': df.head().to_dict(orient='records')
     }
-    return analysis
+    return json.loads(json.dumps(analysis, default=str))
 
 def analyze_sql_statements(statements: List[Dict]) -> Dict:
     analysis = {
@@ -37,14 +38,7 @@ def analyze_sqlite_database(data: Dict[str, pd.DataFrame]) -> Dict:
     analysis = {
         'table_count': len(data),
         'tables': {
-            table_name: {
-                'shape': df.shape,
-                'columns': df.columns.tolist(),
-                'dtypes': df.dtypes.to_dict(),
-                'summary': df.describe().to_dict(),
-                'null_counts': df.isnull().sum().to_dict(),
-                'sample': df.head().to_dict(orient='records')
-            }
+            table_name: analyze_dataframe(df)
             for table_name, df in data.items()
         }
     }
