@@ -433,7 +433,7 @@
 }
 
 .chat-list-item.active {
-  background-color: var(--color-accent);
+  background-color: var(--light-primary);
   box-shadow: 0 0 0 2px var(--color-info);
 }
 

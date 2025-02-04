@@ -9,6 +9,13 @@ const ChatList = () => {
   const navigate = useNavigate();
   const params = useParams();
   const activeChatId = params.chatId;
+  console.log(
+    chats.map((chat) => {
+      chat.id;
+    })
+  );
+
+  console.log(activeChatId);
 
   const handleChatClick = (chatId) => {
     switchChat(chatId);
@@ -37,7 +44,7 @@ const ChatList = () => {
             <li
               key={chat.id}
               className={`chat-list-item ${
-                chat.id === activeChatId ? "active" : ""
+                String(chat.id) === String(activeChatId) ? "active" : ""
               }`}
               onClick={() => handleChatClick(chat.id)}
             >
