@@ -13,6 +13,7 @@ export function ChatProvider({ children }) {
   const [chats, setChats] = useState([]);
   const [currentChat, setCurrentChat] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   // Load chats from localStorage on initial render
   useEffect(() => {
@@ -69,6 +70,7 @@ export function ChatProvider({ children }) {
   );
 
   const sendMessage = async (content) => {
+    setIsAnalyzing(true);
     if (currentChat) {
       const newMessage = { content, sender: "user", timestamp: Date.now() };
       const updatedChat = {
@@ -132,15 +134,22 @@ export function ChatProvider({ children }) {
         );
       } catch (error) {
         console.error("Error sending message:", error);
-        console.error("Error response:", error.response);
-        const errorMessage = {
-          content: "Failed to connect to the server.",
+        let errorMessage = "Failed to connect to the server.";
+        if (
+          error.response &&
+          error.response.data &&
+          error.response.data.error
+        ) {
+          errorMessage = error.response.data.error;
+        }
+        const botErrorMessage = {
+          content: errorMessage,
           sender: "bot",
           timestamp: Date.now(),
         };
         const chatWithErrorResponse = {
           ...updatedChat,
-          messages: [...updatedChat.messages, errorMessage],
+          messages: [...updatedChat.messages, botErrorMessage],
           isLoading: false,
         };
         setCurrentChat(chatWithErrorResponse);
@@ -149,6 +158,8 @@ export function ChatProvider({ children }) {
             chat.id === currentChat.id ? chatWithErrorResponse : chat
           )
         );
+      } finally {
+        setIsAnalyzing(false);
       }
     }
   };
