@@ -1,7 +1,9 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import pandas as pd
-from gemini_api import get_gemini_response
+from api.gemini_api import get_gemini_response
+from data.data_processor import preprocess_data
+from data.data_analyzer import analyze_data
 import os
 
 app = Flask(__name__)
@@ -98,6 +100,42 @@ def analyze():
         return jsonify(gemini_response), 500
     
     return jsonify({"message": gemini_response})
+
+@app.route('/api/analyze_data', methods=['POST'])
+def analyze_data_route():
+    data = request.json
+    chat_id = data.get('chat_id')
+    
+    if not chat_id:
+        return jsonify({"error": "Chat ID is required."}), 400
+    
+    file_paths = chat_files.get(chat_id, [])
+    
+    if not file_paths:
+        return jsonify({"error": "No files uploaded for this chat."}), 400
+    
+    try:
+        # Process and analyze each file
+        results = []
+        for file_path in file_paths:
+            processed_df, preprocessor = preprocess_data(file_path)
+            analysis_results = analyze_data(processed_df)
+            
+            results.append({
+                'file_name': os.path.basename(file_path),
+                'analysis': analysis_results
+            })
+        
+        # Get insights from Gemini
+        insights = get_gemini_response("Analyze this data and provide insights", results)
+        
+        return jsonify({
+            "results": results,
+            "insights": insights
+        })
+    
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
