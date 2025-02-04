@@ -20,7 +20,15 @@ function App() {
             }
           />
           <Route
-            path="/chat/:id?"
+            path="/chat/"
+            element={
+              <Layout>
+                <Chat />
+              </Layout>
+            }
+          />
+          <Route
+            path="/chat/:chatId"
             element={
               <Layout>
                 <Chat />

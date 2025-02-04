@@ -13,6 +13,8 @@ function ChatInput() {
     }
   };
 
+  const isDisabled = input.trim() === "";
+
   return (
     <form onSubmit={handleSubmit} className="chat-input-form">
       <input
@@ -22,7 +24,11 @@ function ChatInput() {
         placeholder="Ask about your data..."
         className="chat-input"
       />
-      <button type="submit" className="chat-submit-button">
+      <button
+        type="submit"
+        className={`chat-submit-button ${isDisabled ? "disabled" : ""}`}
+        disabled={isDisabled}
+      >
         Send
       </button>
     </form>

@@ -95,8 +95,10 @@
   border-bottom: 1px solid var(--secondary-color);
 }
 
-.sidebar-chats {
-  padding: var(--spacing-md);
+.new-chat-button {
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: 500;
 }
 
 /**********************************************************************************************************
@@ -377,6 +379,117 @@
 .data-visualization {
   margin-top: var(--spacing-md);
 }
+
+/* CHAT ITEM */
+.chat-list {
+  background-color: var(--color-background);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  max-width: 400px;
+}
+
+.chat-list-title {
+  color: var(--color-info);
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  text-align: center;
+  border-bottom: 2px solid var(--color-accent);
+  padding-bottom: 0.5rem;
+}
+
+.chat-list-items {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.chat-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  background-color: var(--color-secondary);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  padding-block: 1rem;
+  padding-inline: 0.5rem;
+  font-size: 1px;
+}
+
+.chat-list-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  background-color: var(--light-primary);
+}
+
+.chat-list-item.active {
+  background-color: var(--color-accent);
+  box-shadow: 0 0 0 2px var(--color-info);
+}
+
+.chat-list-item-content {
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+}
+
+.chat-icon {
+  color: var(--color-info);
+  font-size: 1.2rem;
+  margin-right: 0.75rem;
+}
+
+.chat-title {
+  color: var(--color-text);
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.delete-button {
+  padding: 0;
+  background-color: transparent;
+}
+
+.delete-icon {
+  color: var(--color-error);
+  font-size: 1rem;
+  opacity: 0.7;
+  transition: all 0.3s ease;
+  display: none;
+}
+
+.chat-list-item:hover .delete-icon {
+  display: block;
+}
+
+.delete-icon:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+/* DISABLE CHAT BUTTON */
+.chat-submit-button {
+  background-color: var(--primary-color);
+  color: var(--background-color);
+  border: none;
+  padding: 0.5em 1em;
+  cursor: pointer;
+  transition: background-color 0.3s ease, opacity 0.3s ease;
+}
+
+.chat-submit-button:hover:not(:disabled) {
+  background-color: var(--secondary-color);
+}
+
+.chat-submit-button.disabled {
+  background-color: var(--dark-sidebar);
+  color: var(--dark-text);
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /**********************************************************************************************************
  *********************************************** BREAKPOINTS **********************************************
  **********************************************************************************************************/
@@ -441,3 +554,28 @@
 /*********************************************************************************************************
  ************************************************ ANIMATIONS **********************************************
  **********************************************************************************************************/
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.chat-list-item {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+/* Hover and focus styles */
+.chat-list-item:focus-within {
+  outline: 2px solid var(--color-info);
+  outline-offset: 2px;
+}
+
+.delete-icon:focus {
+  outline: 2px solid var(--color-error);
+  outline-offset: 2px;
+}

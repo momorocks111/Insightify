@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useParams } from "react-router-dom";
 import ChatInterface from "../components/chat/ChatInterface";
 import DataVisualization from "../components/data/DataVisualization";
 import { useChat } from "../contexts/ChatContext";
@@ -6,7 +7,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChartLine, faRobot } from "@fortawesome/free-solid-svg-icons";
 
 function Chat() {
-  const { currentChat } = useChat();
+  const { id } = useParams();
+  const { currentChat, switchChat } = useChat();
+
+  useEffect(() => {
+    if (id) {
+      switchChat(Number(id));
+    }
+  }, [id, switchChat]);
 
   return (
     <div className="chat-page">
