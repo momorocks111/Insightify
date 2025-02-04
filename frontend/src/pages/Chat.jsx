@@ -17,8 +17,6 @@ function Chat() {
     }
   }, [id, switchChat]);
 
-  console.log(currentChat);
-
   if (!currentChat) {
     return (
       <div className="no-chat-message">

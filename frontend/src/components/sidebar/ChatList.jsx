@@ -9,13 +9,6 @@ const ChatList = () => {
   const navigate = useNavigate();
   const params = useParams();
   const activeChatId = params.chatId;
-  console.log(
-    chats.map((chat) => {
-      chat.id;
-    })
-  );
-
-  console.log(activeChatId);
 
   const handleChatClick = (chatId) => {
     switchChat(chatId);

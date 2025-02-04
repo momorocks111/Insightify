@@ -312,10 +312,10 @@
   color: var(--background-color);
 }
 
-.ai-message {
+.bot-message {
   align-self: flex-start;
   background-color: var(--ai-message-bg);
-  color: var(--background-color);
+  color: var(--text-color);
 }
 
 .message-content {

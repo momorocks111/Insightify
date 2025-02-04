@@ -73,7 +73,7 @@ export function ChatProvider({ children }) {
       const updatedChat = {
         ...currentChat,
         messages: [...currentChat.messages, newMessage],
-        isLoading: true, // Set loading state to true when sending message
+        isLoading: true,
       };
 
       setCurrentChat(updatedChat);
@@ -82,9 +82,11 @@ export function ChatProvider({ children }) {
       );
 
       try {
-        const response = await axios.post("http://127.0.0.1:5000/api/echo", {
-          message: content,
-        });
+        const response = await axios.post(
+          "http://127.0.0.1:5000/api/echo",
+          { message: content },
+          { headers: { "Content-Type": "application/json" } }
+        );
 
         const botMessage = {
           content: response.data.message,
@@ -95,7 +97,7 @@ export function ChatProvider({ children }) {
         const chatWithBotResponse = {
           ...updatedChat,
           messages: [...updatedChat.messages, botMessage],
-          isLoading: false, // Set loading to false when the response is received
+          isLoading: false,
         };
 
         setCurrentChat(chatWithBotResponse);
@@ -114,7 +116,7 @@ export function ChatProvider({ children }) {
         const chatWithErrorResponse = {
           ...updatedChat,
           messages: [...updatedChat.messages, errorMessage],
-          isLoading: false, // Set loading to false if error occurs
+          isLoading: false,
         };
         setCurrentChat(chatWithErrorResponse);
         setChats(

@@ -1,10 +1,11 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import pandas as pd
+from gemini_api import get_gemini_response
 import os
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
+CORS(app, resources={r"/api/*": {"origins": "http://localhost:5173"}})
 
 # Ensure the uploads directory exists
 UPLOAD_FOLDER = 'uploads'
@@ -16,11 +17,23 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # Dictionary to store files per chat session
 chat_files = {}
 
-@app.route('/api/echo', methods=['POST'])
+@app.route('/api/echo', methods=['POST', 'OPTIONS'])
 def echo():
+    if request.method == 'OPTIONS':
+        return '', 204
     data = request.json
     message = data.get('message', '')
-    return jsonify({'message': f'Received: {message}'})
+    
+    if not message:
+        return jsonify({"error": "Message is required."}), 400
+    
+    # Send the message to Gemini and get the response
+    gemini_response = get_gemini_response(message, [])
+    
+    if isinstance(gemini_response, dict) and "error" in gemini_response:
+        return jsonify(gemini_response), 500
+    
+    return jsonify({"message": gemini_response})
 
 @app.route('/api/upload', methods=['POST'])
 def upload_file():
@@ -65,6 +78,26 @@ def upload_file():
             })
         except Exception as e:
             return jsonify({'error': f'Error processing file: {str(e)}', 'message': f'Error processing file: {str(e)}'}), 500
+
+@app.route('/api/analyze', methods=['POST'])
+def analyze():
+    data = request.json
+    message = data.get('message', '')
+    chat_id = data.get('chat_id', '')
+    
+    if not message:
+        return jsonify({"error": "Message is required."}), 400
+    
+    # Get the file paths for this chat session
+    file_paths = chat_files.get(chat_id, [])
+    
+    # Send the message and file paths to Gemini and get the response
+    gemini_response = get_gemini_response(message, file_paths)
+    
+    if "error" in gemini_response:
+        return jsonify(gemini_response), 500
+    
+    return jsonify({"message": gemini_response})
 
 if __name__ == '__main__':
     app.run(debug=True)
