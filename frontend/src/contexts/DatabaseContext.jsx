@@ -5,12 +5,15 @@ const DatabaseContext = createContext();
 export const DatabaseProvider = ({ children }) => {
   const [databaseFile, setDatabaseFile] = useState(null);
   const [databaseSchema, setDatabaseSchema] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const value = {
     databaseFile,
     setDatabaseFile,
     databaseSchema,
     setDatabaseSchema,
+    isLoading,
+    setIsLoading,
   };
 
   return (

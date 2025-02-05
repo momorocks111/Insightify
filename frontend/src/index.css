@@ -6,7 +6,7 @@
   --dark-secondary: #1b8869;
   --dark-accent: #17eeb1;
   --dark-sidebar: #0d1a14;
-  --color-error: #f84b4b;
+  --dark-color-error: #f84b4b;
 
   /* Light theme variables */
   --light-text: #151918;
@@ -15,6 +15,7 @@
   --light-secondary: #77e4c5;
   --light-accent: #11e8ac;
   --light-sidebar: #dae8e3;
+  --light-color-error: #e63946;
 
   /* Default to dark theme */
   --text-color: var(--dark-text);
@@ -23,6 +24,7 @@
   --secondary-color: var(--dark-secondary);
   --accent-color: var(--dark-accent);
   --sidebar-color: var(--dark-sidebar);
+  --color-error: var(--dark-color-error);
 
   /* Chat-specific colors */
   --user-message-bg: var(--primary-color);
@@ -125,8 +127,8 @@ button:hover {
   --secondary-color: var(--light-secondary);
   --accent-color: var(--light-accent);
   --sidebar-color: var(--light-sidebar);
+  --color-error: var(--light-color-error);
 }
-
 /* Webkit browsers (Chrome, Safari, newer versions of Opera) */
 ::-webkit-scrollbar {
   width: 8px;

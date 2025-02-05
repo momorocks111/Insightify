@@ -18,13 +18,30 @@ const SchemaVisualization = () => {
 
   const generateMermaidGraph = (schema) => {
     let graphDef = "erDiagram\n";
-    Object.entries(schema).forEach(([tableName, tableInfo]) => {
-      graphDef += `  ${tableName} {\n`;
-      tableInfo.columns.forEach((column) => {
-        graphDef += `    ${column.type} ${column.name}\n`;
+    if (Array.isArray(schema)) {
+      // SQL statements
+      schema
+        .filter((stmt) => stmt.type === "CREATE")
+        .forEach((table) => {
+          graphDef += `  ${table.table} {\n    ${table.columns}\n  }\n`;
+        });
+    } else if (schema.tables) {
+      // SQLite database
+      Object.entries(schema.tables).forEach(([tableName, tableInfo]) => {
+        graphDef += `  ${tableName} {\n`;
+        Object.entries(tableInfo.dtypes).forEach(([columnName, columnType]) => {
+          graphDef += `    ${columnType} ${columnName}\n`;
+        });
+        graphDef += "  }\n";
+      });
+    } else {
+      // Single table (CSV/Excel)
+      graphDef += `  Data {\n`;
+      Object.entries(schema.dtypes).forEach(([columnName, columnType]) => {
+        graphDef += `    ${columnType} ${columnName}\n`;
       });
       graphDef += "  }\n";
-    });
+    }
     return graphDef;
   };
 

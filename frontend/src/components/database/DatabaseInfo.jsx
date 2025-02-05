@@ -7,7 +7,7 @@ import { useDatabaseContext } from "../../contexts/DatabaseContext";
 const DatabaseInfo = () => {
   const [activeTab, setActiveTab] = useState("tables");
   const [selectedTable, setSelectedTable] = useState(null);
-  const { databaseSchema } = useDatabaseContext();
+  const { databaseSchema, isLoading } = useDatabaseContext();
 
   const renderContent = () => {
     switch (activeTab) {
@@ -55,12 +55,14 @@ const DatabaseInfo = () => {
         </button>
       </nav>
       <div className="database-info__content">
-        {databaseSchema ? (
-          renderContent()
-        ) : (
+        {isLoading ? (
           <p className="database-info__loading">
             Loading database information...
           </p>
+        ) : databaseSchema ? (
+          renderContent()
+        ) : (
+          <p className="database-info__empty">No database loaded</p>
         )}
       </div>
     </div>

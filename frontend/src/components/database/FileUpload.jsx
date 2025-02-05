@@ -3,26 +3,32 @@ import { useDropzone } from "react-dropzone";
 import { useDatabaseContext } from "../../contexts/DatabaseContext";
 
 const FileUpload = ({ onFileUpload }) => {
-  const { setDatabaseFile } = useDatabaseContext();
+  const { setDatabaseSchema } = useDatabaseContext();
 
   const onDrop = useCallback(
-    (acceptedFiles) => {
+    async (acceptedFiles) => {
       const file = acceptedFiles[0];
-      const validExtensions = [".db", ".sql", ".sqlite", ".mdb", ".accdb"];
-      const fileExtension = file.name
-        .substring(file.name.lastIndexOf("."))
-        .toLowerCase();
-
-      if (file && validExtensions.includes(fileExtension)) {
-        setDatabaseFile(file);
-        onFileUpload();
-      } else {
-        alert(
-          "Please upload a valid database file (.db, .sql, .sqlite, .mdb, .accdb)"
-        );
+      if (file) {
+        const formData = new FormData();
+        formData.append("file", file);
+        try {
+          const response = await fetch(
+            "http://127.0.0.1:5000/api/analyze_with_file",
+            {
+              method: "POST",
+              body: formData,
+            }
+          );
+          const data = await response.json();
+          setDatabaseSchema(data.file_info.analysis);
+          onFileUpload();
+        } catch (error) {
+          console.error("Error uploading file:", error);
+          alert("Failed to upload file.");
+        }
       }
     },
-    [setDatabaseFile, onFileUpload]
+    [setDatabaseSchema, onFileUpload]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
