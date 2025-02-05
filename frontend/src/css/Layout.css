@@ -710,6 +710,118 @@
 }
 
 /**********************************************************************************************************
+ *********************************************** DATA ANLYSIS *********************************************
+ **********************************************************************************************************/
+.database-analysis {
+  padding: var(--spacing-md);
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.database-analysis__title {
+  font-size: var(--font-size-xl);
+  color: var(--accent-color);
+  margin-bottom: var(--spacing-lg);
+  text-align: center;
+}
+
+.file-upload {
+  border: 2px dashed var(--primary-color);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-xl);
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--transition-speed) ease;
+}
+
+.file-upload:hover {
+  border-color: var(--accent-color);
+  background-color: rgba(var(--accent-color-rgb), 0.05);
+}
+
+.file-upload__text {
+  font-size: var(--font-size-large);
+  color: var(--text-color);
+  margin-bottom: var(--spacing-md);
+}
+
+.file-upload__formats {
+  font-size: var(--font-size-small);
+  color: var(--secondary-color);
+}
+
+.database-info__nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-lg);
+}
+
+.database-info__nav-btn {
+  background-color: var(--sidebar-color);
+  color: var(--text-color);
+  border: none;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all var(--transition-speed) ease;
+}
+
+.database-info__nav-btn:hover,
+.database-info__nav-btn.active {
+  background-color: var(--primary-color);
+  color: var(--background-color);
+}
+
+.tables-list__title,
+.table-details__title {
+  font-size: var(--font-size-large);
+  color: var(--accent-color);
+  margin-bottom: var(--spacing-md);
+}
+
+.tables-list__items {
+  list-style-type: none;
+  padding: 0;
+}
+
+.tables-list__item {
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: var(--sidebar-color);
+  margin-bottom: var(--spacing-sm);
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-speed) ease;
+}
+
+.tables-list__item:hover {
+  background-color: var(--primary-color);
+  color: var(--background-color);
+}
+
+.table-details__info {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table-details__info th,
+.table-details__info td {
+  padding: var(--spacing-sm);
+  text-align: left;
+  border-bottom: 1px solid var(--secondary-color);
+}
+
+.table-details__info th {
+  background-color: var(--sidebar-color);
+  color: var(--text-color);
+}
+
+#schema-diagram {
+  width: 100%;
+  overflow-x: auto;
+}
+
+/**********************************************************************************************************
  *********************************************** BREAKPOINTS **********************************************
  **********************************************************************************************************/
 /* TABLET (768px) */
@@ -748,6 +860,34 @@
   .message.bot-message pre {
     padding: var(--spacing-sm);
   }
+
+  /* DATA ANALYSIS */
+  .database-analysis {
+    padding: var(--spacing-lg);
+  }
+
+  .database-analysis__title {
+    font-size: var(--font-size-xxl);
+  }
+
+  .database-info__nav {
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  .database-info__nav-btn {
+    padding: var(--spacing-md) var(--spacing-lg);
+  }
+
+  .tables-list__items {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-md);
+  }
+
+  .table-details__info {
+    font-size: var(--font-size-base);
+  }
 }
 
 /* DESKTOP (1024px) */
@@ -772,9 +912,46 @@
   .chat-sidebar {
     flex-basis: 30%;
   }
+
+  /* DATA ANALYSIS */
+  .database-analysis {
+    padding: var(--spacing-xl);
+    max-width: 1200px;
+  }
+
+  .database-info {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    gap: var(--spacing-xl);
+  }
+
+  .database-info__nav {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .database-info__content {
+    background-color: var(--sidebar-color);
+    padding: var(--spacing-lg);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
+  }
+
+  .tables-list__items {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .table-details__info {
+    font-size: var(--font-size-large);
+  }
+
+  #schema-diagram {
+    max-width: 800px;
+    margin: 0 auto;
+  }
 }
 
-/*********************************************************************************************************
+/**********************************************************************************************************
  ************************************************ ANIMATIONS **********************************************
  **********************************************************************************************************/
 @keyframes fadeIn {

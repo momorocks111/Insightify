@@ -1,13 +1,22 @@
-import React from "react";
-import Chart from "../components/data/Chart";
+import React, { useState } from "react";
+import FileUpload from "../components/database/FileUpload";
+import DatabaseInfo from "../components/database/DatabaseInfo";
+import { DatabaseProvider } from "../contexts/DatabaseContext";
 
 const Analysis = () => {
+  const [fileUploaded, setFileUploaded] = useState(false);
+
   return (
-    <div className="analysis-page">
-      <h1>Data Analysis</h1>
-      <Chart />
-      <p>Select a dataset to analyze or upload a new one.</p>
-    </div>
+    <DatabaseProvider>
+      <div className="database-analysis">
+        <h1 className="database-analysis__title">Database Analysis</h1>
+        {!fileUploaded ? (
+          <FileUpload onFileUpload={() => setFileUploaded(true)} />
+        ) : (
+          <DatabaseInfo />
+        )}
+      </div>
+    </DatabaseProvider>
   );
 };
 
