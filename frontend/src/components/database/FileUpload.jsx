@@ -5,70 +5,23 @@ import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 
 const FileUpload = ({ onFileUpload }) => {
-  const {
-    setDatabaseSchema,
-    setFileInfo,
-    setIsLoading,
-    setError,
-    uploadProgress,
-    setUploadProgress,
-  } = useDatabaseContext();
+  const { fetchDatabaseAnalysis, setError, uploadProgress, setUploadProgress } =
+    useDatabaseContext();
 
   const onDrop = useCallback(
     async (acceptedFiles) => {
       const file = acceptedFiles[0];
       if (file) {
-        const formData = new FormData();
-        formData.append("file", file);
         try {
-          setIsLoading(true);
-          setError(null);
-          setUploadProgress(0);
-
-          const xhr = new XMLHttpRequest();
-          xhr.open("POST", "http://127.0.0.1:5000/api/database_analysis");
-
-          xhr.upload.onprogress = (event) => {
-            if (event.lengthComputable) {
-              const percentComplete = (event.loaded / event.total) * 100;
-              setUploadProgress(percentComplete);
-            }
-          };
-
-          xhr.onload = () => {
-            if (xhr.status === 200) {
-              const data = JSON.parse(xhr.responseText);
-              setFileInfo(data.file_info);
-              setDatabaseSchema(data.file_info.analysis);
-              onFileUpload();
-            } else {
-              setError("An error occurred while uploading the file.");
-            }
-            setIsLoading(false);
-          };
-
-          xhr.onerror = () => {
-            console.error("Error uploading file");
-            setError("Failed to upload file. Please try again.");
-            setIsLoading(false);
-          };
-
-          xhr.send(formData);
+          await fetchDatabaseAnalysis(file);
+          onFileUpload();
         } catch (error) {
           console.error("Error uploading file:", error);
           setError("Failed to upload file. Please try again.");
-          setIsLoading(false);
         }
       }
     },
-    [
-      setDatabaseSchema,
-      setFileInfo,
-      setIsLoading,
-      setError,
-      setUploadProgress,
-      onFileUpload,
-    ]
+    [fetchDatabaseAnalysis, setError, onFileUpload]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });

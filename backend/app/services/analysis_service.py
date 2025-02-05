@@ -26,11 +26,14 @@ def analyze_dataframe(df: pd.DataFrame) -> Dict:
     return json.loads(json.dumps(analysis, default=str))
 
 def analyze_sql_statements(statements: List[Dict]) -> Dict:
+    create_statements = [stmt for stmt in statements if stmt['type'] == 'CREATE']
+    insert_statements = [stmt for stmt in statements if stmt['type'] == 'INSERT']
+    
     analysis = {
-        'table_count': len(set(stmt['table'] for stmt in statements if 'table' in stmt)),
-        'create_statements': [stmt for stmt in statements if stmt['type'] == 'CREATE'],
-        'insert_statements': len([stmt for stmt in statements if stmt['type'] == 'INSERT']),
-        'sample_inserts': [stmt for stmt in statements if stmt['type'] == 'INSERT'][:5]
+        'table_count': len(create_statements),
+        'create_statements': create_statements,
+        'insert_count': len(insert_statements),
+        'sample_inserts': insert_statements[:5]
     }
     return analysis
 

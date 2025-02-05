@@ -9,10 +9,8 @@ const TableDetails = ({ tableName }) => {
   const { type, analysis } = fileInfo;
 
   let tableInfo;
-  if (type === "list" && Array.isArray(analysis)) {
-    tableInfo = analysis.find(
-      (stmt) => stmt.type === "CREATE" && stmt.table === tableName
-    );
+  if (type === "SQL" && Array.isArray(analysis.tables)) {
+    tableInfo = analysis.tables.find((table) => table.name === tableName);
   } else if (type === "dict" && analysis.tables) {
     tableInfo = analysis.tables[tableName];
   } else if (type === "DataFrame") {
@@ -22,23 +20,14 @@ const TableDetails = ({ tableName }) => {
   if (!tableInfo) return <p>Table information not found.</p>;
 
   const renderColumns = () => {
-    if (type === "list") {
-      // Parse SQL CREATE statement to extract column info
-      const columnRegex = /\((.+)\)/;
-      const columnsMatch = tableInfo.columns.match(columnRegex);
-      if (columnsMatch) {
-        const columns = columnsMatch[1].split(",").map((col) => col.trim());
-        return columns.map((col) => {
-          const [name, ...rest] = col.split(" ");
-          return (
-            <tr key={name}>
-              <td>{name}</td>
-              <td>{rest.join(" ")}</td>
-              <td></td>
-            </tr>
-          );
-        });
-      }
+    if (type === "SQL" && tableInfo && tableInfo.columns) {
+      return tableInfo.columns.map((column) => (
+        <tr key={column.name}>
+          <td>{column.name}</td>
+          <td>{column.type}</td>
+          <td></td>
+        </tr>
+      ));
     } else if (type === "dict" || type === "DataFrame") {
       return Object.entries(tableInfo.dtypes).map(([name, dtype]) => (
         <tr key={name}>

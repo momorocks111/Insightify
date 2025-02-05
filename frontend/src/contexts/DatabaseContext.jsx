@@ -10,6 +10,39 @@ export const DatabaseProvider = ({ children }) => {
   const [error, setError] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(0);
 
+  const fetchDatabaseAnalysis = async (file) => {
+    setIsLoading(true);
+    setError(null);
+    setUploadProgress(0);
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await fetch(
+        "http://127.0.0.1:5000/api/database_analysis",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to upload file");
+      }
+
+      const data = await response.json();
+      setFileInfo(data.file_info);
+      setDatabaseSchema(data.file_info.analysis);
+      setIsLoading(false);
+      return data;
+    } catch (error) {
+      setError(error.message);
+      setIsLoading(false);
+      throw error;
+    }
+  };
+
   const value = {
     databaseFile,
     setDatabaseFile,
@@ -23,6 +56,7 @@ export const DatabaseProvider = ({ children }) => {
     setError,
     uploadProgress,
     setUploadProgress,
+    fetchDatabaseAnalysis,
   };
 
   return (

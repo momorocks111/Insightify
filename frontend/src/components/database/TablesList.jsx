@@ -5,23 +5,21 @@ const TablesList = ({ onSelectTable }) => {
   const { fileInfo } = useDatabaseContext();
 
   const renderTables = () => {
-    if (!fileInfo || !fileInfo.analysis) return null;
+    if (!fileInfo || !fileInfo.analysis || !fileInfo.analysis.tables)
+      return null;
 
     const { type, analysis } = fileInfo;
 
-    if (type === "list" && Array.isArray(analysis)) {
-      // SQL statements
-      return analysis
-        .filter((stmt) => stmt.type === "CREATE")
-        .map((stmt) => (
-          <li
-            key={stmt.table}
-            className="tables-list__item"
-            onClick={() => onSelectTable(stmt.table)}
-          >
-            {stmt.table}
-          </li>
-        ));
+    if (type === "SQL" && Array.isArray(analysis.tables)) {
+      return analysis.tables.map((table) => (
+        <li
+          key={table.name}
+          className="tables-list__item"
+          onClick={() => onSelectTable(table.name)}
+        >
+          {table.name}
+        </li>
+      ));
     } else if (type === "dict" && analysis.tables) {
       // SQLite database
       return Object.keys(analysis.tables).map((tableName) => (

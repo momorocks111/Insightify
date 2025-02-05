@@ -1,51 +1,54 @@
-import React, { useEffect, useRef } from "react";
+import React, { useCallback } from "react";
+import ReactFlow, { Background, Controls } from "reactflow";
+import "reactflow/dist/style.css";
 import { useDatabaseContext } from "../../contexts/DatabaseContext";
-import mermaid from "mermaid";
 
 const SchemaVisualization = () => {
-  const { databaseSchema } = useDatabaseContext();
-  const mermaidRef = useRef(null);
+  const { fileInfo } = useDatabaseContext();
 
-  useEffect(() => {
-    if (databaseSchema && mermaidRef.current) {
-      const graphDefinition = generateMermaidGraph(databaseSchema);
-      mermaid.initialize({ startOnLoad: true });
-      mermaid.render("schema-diagram", graphDefinition, (svgCode) => {
-        mermaidRef.current.innerHTML = svgCode;
-      });
-    }
-  }, [databaseSchema]);
+  const generateNodes = useCallback(() => {
+    if (!fileInfo || !fileInfo.analysis || !fileInfo.analysis.tables) return [];
 
-  const generateMermaidGraph = (schema) => {
-    let graphDef = "erDiagram\n";
-    if (Array.isArray(schema)) {
-      // SQL statements
-      schema
-        .filter((stmt) => stmt.type === "CREATE")
-        .forEach((table) => {
-          graphDef += `  ${table.table} {\n    ${table.columns}\n  }\n`;
-        });
-    } else if (schema.tables) {
-      // SQLite database
-      Object.entries(schema.tables).forEach(([tableName, tableInfo]) => {
-        graphDef += `  ${tableName} {\n`;
-        Object.entries(tableInfo.dtypes).forEach(([columnName, columnType]) => {
-          graphDef += `    ${columnType} ${columnName}\n`;
-        });
-        graphDef += "  }\n";
-      });
-    } else {
-      // Single table (CSV/Excel)
-      graphDef += `  Data {\n`;
-      Object.entries(schema.dtypes).forEach(([columnName, columnType]) => {
-        graphDef += `    ${columnType} ${columnName}\n`;
-      });
-      graphDef += "  }\n";
-    }
-    return graphDef;
+    return fileInfo.analysis.tables.map((table, index) => ({
+      id: table.name,
+      data: { label: table.name, columns: table.columns },
+      position: { x: 250 * index, y: 0 },
+      type: "tableNode",
+    }));
+  }, [fileInfo]);
+
+  const nodeTypes = {
+    tableNode: TableNode,
   };
 
-  return <div ref={mermaidRef} id="schema-diagram"></div>;
+  return (
+    <div style={{ height: "500px", width: "100%" }}>
+      <ReactFlow nodes={generateNodes()} nodeTypes={nodeTypes} fitView>
+        <Background />
+        <Controls />
+      </ReactFlow>
+    </div>
+  );
 };
+
+const TableNode = ({ data }) => (
+  <div
+    style={{
+      padding: "10px",
+      border: "1px solid #ddd",
+      borderRadius: "5px",
+      background: "white",
+    }}
+  >
+    <h3>{data.label}</h3>
+    <ul style={{ listStyleType: "none", padding: 0 }}>
+      {data.columns.map((column, index) => (
+        <li key={index}>
+          {column.name}: {column.type}
+        </li>
+      ))}
+    </ul>
+  </div>
+);
 
 export default SchemaVisualization;
