@@ -2,12 +2,16 @@ import React from "react";
 import { useDatabaseContext } from "../../contexts/DatabaseContext";
 
 const TablesList = ({ onSelectTable }) => {
-  const { databaseSchema } = useDatabaseContext();
+  const { fileInfo } = useDatabaseContext();
 
   const renderTables = () => {
-    if (Array.isArray(databaseSchema)) {
+    if (!fileInfo || !fileInfo.analysis) return null;
+
+    const { type, analysis } = fileInfo;
+
+    if (type === "list" && Array.isArray(analysis)) {
       // SQL statements
-      return databaseSchema
+      return analysis
         .filter((stmt) => stmt.type === "CREATE")
         .map((stmt) => (
           <li
@@ -18,9 +22,9 @@ const TablesList = ({ onSelectTable }) => {
             {stmt.table}
           </li>
         ));
-    } else if (databaseSchema.tables) {
+    } else if (type === "dict" && analysis.tables) {
       // SQLite database
-      return Object.keys(databaseSchema.tables).map((tableName) => (
+      return Object.keys(analysis.tables).map((tableName) => (
         <li
           key={tableName}
           className="tables-list__item"
@@ -29,7 +33,7 @@ const TablesList = ({ onSelectTable }) => {
           {tableName}
         </li>
       ));
-    } else {
+    } else if (type === "DataFrame") {
       // Single table (CSV/Excel)
       return (
         <li className="tables-list__item" onClick={() => onSelectTable("data")}>
@@ -37,6 +41,8 @@ const TablesList = ({ onSelectTable }) => {
         </li>
       );
     }
+
+    return null;
   };
 
   return (

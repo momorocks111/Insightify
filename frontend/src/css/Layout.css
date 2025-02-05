@@ -725,7 +725,7 @@
   text-align: center;
 }
 
-.file-upload {
+.dashed-line {
   border: 2px dashed var(--primary-color);
   border-radius: var(--border-radius-lg);
   padding: var(--spacing-xl);
@@ -734,7 +734,7 @@
   transition: all var(--transition-speed) ease;
 }
 
-.file-upload:hover {
+.dashed-line:hover {
   border-color: var(--accent-color);
   background-color: rgba(var(--accent-color-rgb), 0.05);
 }

@@ -1,9 +1,18 @@
 import React, { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { useDatabaseContext } from "../../contexts/DatabaseContext";
+import { CircularProgressbar } from "react-circular-progressbar";
+import "react-circular-progressbar/dist/styles.css";
 
 const FileUpload = ({ onFileUpload }) => {
-  const { setDatabaseSchema } = useDatabaseContext();
+  const {
+    setDatabaseSchema,
+    setFileInfo,
+    setIsLoading,
+    setError,
+    uploadProgress,
+    setUploadProgress,
+  } = useDatabaseContext();
 
   const onDrop = useCallback(
     async (acceptedFiles) => {
@@ -12,32 +21,70 @@ const FileUpload = ({ onFileUpload }) => {
         const formData = new FormData();
         formData.append("file", file);
         try {
-          const response = await fetch(
-            "http://127.0.0.1:5000/api/analyze_with_file",
-            {
-              method: "POST",
-              body: formData,
+          setIsLoading(true);
+          setError(null);
+          setUploadProgress(0);
+
+          const xhr = new XMLHttpRequest();
+          xhr.open("POST", "http://127.0.0.1:5000/api/database_analysis");
+
+          xhr.upload.onprogress = (event) => {
+            if (event.lengthComputable) {
+              const percentComplete = (event.loaded / event.total) * 100;
+              setUploadProgress(percentComplete);
             }
-          );
-          const data = await response.json();
-          setDatabaseSchema(data.file_info.analysis);
-          onFileUpload();
+          };
+
+          xhr.onload = () => {
+            if (xhr.status === 200) {
+              const data = JSON.parse(xhr.responseText);
+              setFileInfo(data.file_info);
+              setDatabaseSchema(data.file_info.analysis);
+              onFileUpload();
+            } else {
+              setError("An error occurred while uploading the file.");
+            }
+            setIsLoading(false);
+          };
+
+          xhr.onerror = () => {
+            console.error("Error uploading file");
+            setError("Failed to upload file. Please try again.");
+            setIsLoading(false);
+          };
+
+          xhr.send(formData);
         } catch (error) {
           console.error("Error uploading file:", error);
-          alert("Failed to upload file.");
+          setError("Failed to upload file. Please try again.");
+          setIsLoading(false);
         }
       }
     },
-    [setDatabaseSchema, onFileUpload]
+    [
+      setDatabaseSchema,
+      setFileInfo,
+      setIsLoading,
+      setError,
+      setUploadProgress,
+      onFileUpload,
+    ]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
   return (
-    <div {...getRootProps()} className="file-upload">
+    <div {...getRootProps()} className="file-upload dashed-line">
       <input {...getInputProps()} />
       <div className="file-upload__content">
-        {isDragActive ? (
+        {uploadProgress > 0 && uploadProgress < 100 ? (
+          <div style={{ width: "200px", height: "200px" }}>
+            <CircularProgressbar
+              value={uploadProgress}
+              text={`${Math.round(uploadProgress)}%`}
+            />
+          </div>
+        ) : isDragActive ? (
           <p className="file-upload__text">Drop the database file here...</p>
         ) : (
           <p className="file-upload__text">
