@@ -29,47 +29,38 @@ def analyze_with_file():
             logger.info("Starting file processing")
             file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], file.filename)
             file.save(file_path)
-            
+
             logger.info(f"Processing {file.filename.split('.')[-1]} file: {file.filename}")
             data = process_file(file, file_path)
-            
+
             logger.info("File processed. Data type: %s", type(data).__name__)
             logger.info("Data preview: %s", str(data)[:1000])  # Log first 1000 characters of data
-            
-            if isinstance(data, pd.DataFrame):
-                logger.info(f"DataFrame shape: {data.shape}")
-                analysis_results = analyze_dataframe(data)
-            elif isinstance(data, list):  # SQL statements
-                logger.info(f"Number of SQL statements: {len(data)}")
-                analysis_results = analyze_sql_statements(data)
-            elif isinstance(data, dict):  # SQLite database
-                logger.info(f"Number of tables: {len(data)}")
-                analysis_results = analyze_sqlite_database(data)
-            else:
-                raise ValueError("Unsupported data format")
-            
+
+            analysis_results = analyze_data(data)
+            file_type = type(data).__name__
+
             logger.info("Data processed and analyzed")
             logger.info("Analysis results: %s", json.dumps(analysis_results, default=str, indent=2))
-            
+
             logger.info("Preparing data for Gemini API")
             gemini_input = {
                 "file_type": file.filename.split('.')[-1],
-                "data_type": type(data).__name__,
+                "data_type": file_type,
                 "analysis_results": analysis_results,
                 "user_message": message
             }
             logger.info("Data being sent to Gemini API: %s", json.dumps(gemini_input, default=str, indent=2))
-            
+
             logger.info("Sending data to Gemini API")
             insights = get_gemini_response("Analyze this data and provide insights.", gemini_input)
             logger.info("Received response from Gemini API")
             logger.info("Gemini response: %s", insights)
-            
+
             response = jsonify({
                 "message": insights,
                 "file_info": {
                     'filename': file.filename,
-                    'type': type(data).__name__,
+                    'type': file_type,
                     'analysis': analysis_results
                 }
             })
@@ -81,3 +72,4 @@ def analyze_with_file():
 
     logger.error("Unknown error occurred")
     return jsonify({'error': 'Unknown error'}), 500
+

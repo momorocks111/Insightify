@@ -4,6 +4,7 @@ from typing import Union, List, Dict
 from werkzeug.datastructures import FileStorage
 import io
 import json
+import PyPDF2
 
 def process_csv(file: FileStorage) -> pd.DataFrame:
     file.seek(0)
@@ -56,12 +57,24 @@ def process_text(file: FileStorage) -> str:
     file.seek(0)
     return file.read().decode('utf-8')
 
-def process_file(file: FileStorage, file_path: str) -> Union[pd.DataFrame, List[Dict], Dict[str, pd.DataFrame]]:
+def process_pdf(file: FileStorage) -> str:
+  file.seek(0)
+  pdf_text = ""
+  try:
+    pdf_reader = PyPDF2.PdfReader(file)
+    for page_num in range(len(pdf_reader.pages)):
+      page = pdf_reader.pages[page_num]
+      pdf_text += page.extract_text()
+  except Exception as e:
+    raise ValueError(f"Error reading PDF: {str(e)}")
+  return pdf_text
+
+def process_file(file: FileStorage, file_path: str) -> Union[pd.DataFrame, List[Dict], Dict[str, pd.DataFrame], str]:
     file.seek(0, io.SEEK_END)
     if file.tell() == 0:
         raise ValueError("The uploaded file is empty")
     file.seek(0)
-    
+
     file_extension = file.filename.split('.')[-1].lower()
     processors = {
         'csv': process_csv,
@@ -71,12 +84,14 @@ def process_file(file: FileStorage, file_path: str) -> Union[pd.DataFrame, List[
         'db': process_sqlite,
         'sqlite': process_sqlite,
         'json': process_json,
-        'txt': process_text
+        'txt': process_text,
+        'pdf': process_pdf  # Add this line
     }
     processor = processors.get(file_extension)
     if not processor:
         raise ValueError(f"Unsupported file type: {file_extension}")
-    
+
     if file_extension in ['db', 'sqlite']:
         return processor(file_path)
     return processor(file)
+
